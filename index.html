@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Dashboard - Drew</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
+    h1 { color: #58a6ff; margin-bottom: 20px; }
+    h2 { color: #8b949e; margin: 30px 0 15px; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; transition: border-color 0.2s; }
+    .card:hover { border-color: #58a6ff; }
+    .card h3 { color: #58a6ff; font-size: 14px; margin-bottom: 8px; }
+    .card h3 a { color: inherit; text-decoration: none; }
+    .card h3 a:hover { text-decoration: underline; }
+    .card p { color: #8b949e; font-size: 13px; line-height: 1.5; margin-bottom: 10px; }
+    .stats { display: flex; gap: 15px; font-size: 12px; color: #8b949e; }
+    .stats span { display: flex; align-items: center; gap: 4px; }
+    .star { color: #f0c14b; }
+    .tag { background: #21262d; color: #58a6ff; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+    .btn { background: #238636; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 10px; }
+    .btn:hover { background: #2ea043; }
+    .section { margin-bottom: 40px; }
+    #loading { text-align: center; padding: 40px; color: #8b949e; }
+  </style>
+</head>
+<body>
+  <h1>🐙 GitHub Dashboard for Drew</h1>
+  
+  <div class="section">
+    <h2>🔥 Trending Repos</h2>
+    <div id="trending" class="grid"><div id="loading">Loading...</div></div>
+  </div>
+  
+  <div class="section">
+    <h2>🎯 Steal This (AI/Automation)</h2>
+    <div id="steal-this" class="grid"></div>
+  </div>
+
+  <div class="section">
+    <h2>💡 Idea Matcher</h2>
+    <input type="text" id="idea-input" placeholder="Describe your idea..." style="width: 100%; max-width: 500px; padding: 12px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9; font-size: 14px;">
+    <button class="btn" onclick="matchIdea()">Find Similar Repos</button>
+    <div id="idea-results" class="grid" style="margin-top: 15px;"></div>
+  </div>
+
+  <script>
+    async function loadData() {
+      try {
+        const trending = await fetch('data/trending.json').then(r => r.json());
+        document.getElementById('trending').innerHTML = trending.map(repo => `
+          <div class="card">
+            <h3><a href="${repo.url}" target="_blank">${repo.name}</a></h3>
+            <p>${repo.desc || 'No description'}</p>
+            <div class="stats">
+              <span class="star">⭐ ${repo.stars.toLocaleString()}</span>
+              <button class="btn" onclick="forkRepo('${repo.name}')">Fork</button>
+            </div>
+          </div>
+        `).join('');
+      } catch(e) {
+        document.getElementById('trending').innerHTML = '<p>Run ./scripts/trending.sh to load data</p>';
+      }
+    }
+
+    function forkRepo(name) {
+      alert('Forking ' + name + '... (run: gh repo fork ' + name + ')');
+    }
+
+    function matchIdea() {
+      const idea = document.getElementById('idea-input').value;
+      document.getElementById('idea-results').innerHTML = '<p>Run: ./scripts/idea-matcher.sh "' + idea + '"</p>';
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
